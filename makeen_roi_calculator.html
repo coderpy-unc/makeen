@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Makeen Robotics — ROI Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Space+Mono:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0A1628;
+  --ink2: #112240;
+  --fire: #E8500A;
+  --gold: #C9952A;
+  --goldlt: #E8B84B;
+  --silver: #C0C8D8;
+  --cream: #F5F0E8;
+  --muted: #6B7A8D;
+  --white: #FFFFFF;
+  --green: #1A7A4A;
+  --greenlt: #E8F5EE;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--ink);
+  padding: 32px 48px 28px;
+  border-bottom: 3px solid var(--fire);
+  position: relative;
+  overflow: hidden;
+}
+.header::after {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,149,42,0.12);
+  pointer-events: none;
+}
+.header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.brand { display: flex; align-items: baseline; gap: 14px; }
+.brand-en {
+  font-family: 'Space Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 0.06em;
+}
+.brand-en span { color: var(--goldlt); }
+.brand-ar {
+  font-family: 'Noto Naskh Arabic', serif;
+  font-size: 20px;
+  color: var(--gold);
+}
+.header-subtitle {
+  font-size: 15px;
+  color: var(--silver);
+  font-style: italic;
+  font-weight: 300;
+}
+.header-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--fire);
+  margin-bottom: 8px;
+}
+
+/* ── USE CASE TABS ── */
+.tabs-wrap {
+  background: var(--ink2);
+  border-bottom: 1px solid rgba(201,149,42,0.15);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.tabs {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  padding: 0 48px;
+}
+.tab {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--silver);
+  padding: 16px 20px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  outline: none;
+}
+.tab:hover { color: var(--goldlt); }
+.tab.active {
+  color: var(--goldlt);
+  border-bottom-color: var(--gold);
+}
+
+/* ── MAIN LAYOUT ── */
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 48px 80px;
+}
+
+/* ── CASE STUDY PANEL ── */
+.case-panel { display: none; }
+.case-panel.active { display: block; }
+
+/* ── CASE HERO PHOTO ── */
+.case-hero {
+  position: relative;
+  height: 280px;
+  margin-bottom: 40px;
+  overflow: hidden;
+  background: var(--ink2);
+}
+.case-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  filter: brightness(0.55) saturate(0.85);
+  transition: filter 0.4s;
+}
+.case-hero:hover img { filter: brightness(0.65) saturate(1); }
+.case-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(10,22,40,0.85) 40%, rgba(10,22,40,0.15) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 36px 40px;
+}
+.case-hero-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--fire), var(--gold));
+}
+.case-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--fire);
+  margin-bottom: 10px;
+}
+.case-title {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.0;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+.case-title em { font-style: italic; color: var(--goldlt); }
+.case-desc {
+  font-size: 15px;
+  color: var(--silver);
+  line-height: 1.7;
+  max-width: 560px;
+  font-weight: 300;
+}
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(10,22,40,0.08);
+  margin-bottom: 40px;
+  border: 1px solid rgba(10,22,40,0.08);
+}
+.stat {
+  background: var(--white);
+  padding: 24px 28px;
+}
+.stat-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.stat-val {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--fire);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-note {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ── CALCULATOR ── */
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.inputs-block {
+  background: var(--white);
+  padding: 32px;
+}
+.inputs-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--fire);
+  margin-bottom: 24px;
+}
+
+.field { margin-bottom: 22px; }
+.field:last-child { margin-bottom: 0; }
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 8px;
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.field input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 3px;
+  background: var(--silver);
+  outline: none;
+  border-radius: 2px;
+}
+.field input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--fire);
+  cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(232,80,10,0.15);
+}
+.field-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  min-width: 64px;
+  text-align: right;
+}
+
+/* Results block */
+.results-block {
+  background: var(--ink);
+  padding: 32px;
+  position: sticky;
+  top: 80px;
+}
+.results-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+.result-primary {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.result-primary-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--silver);
+  margin-bottom: 8px;
+}
+.result-big {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--goldlt);
+  line-height: 1;
+  margin-bottom: 4px;
+  transition: all 0.3s;
+}
+.result-sub {
+  font-size: 13px;
+  color: var(--silver);
+  font-style: italic;
+}
+
+.result-rows { margin-bottom: 24px; }
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.result-row:last-child { border-bottom: none; }
+.rr-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--silver);
+}
+.rr-val {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--white);
+  font-family: 'Cormorant Garamond', serif;
+  transition: all 0.3s;
+}
+.rr-val.positive { color: var(--goldlt); }
+.rr-val.highlight { color: var(--fire); }
+
+/* Payback bar */
+.payback-bar-wrap {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.payback-bar-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--silver);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+.payback-track {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.payback-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--fire), var(--gold));
+  border-radius: 3px;
+  transition: width 0.4s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* ── CTA ── */
+.cta-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+.btn-primary {
+  flex: 1;
+  background: var(--fire);
+  color: var(--white);
+  border: none;
+  padding: 14px 20px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: #c94208; }
+.btn-secondary {
+  flex: 1;
+  background: transparent;
+  color: var(--silver);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 14px 20px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--gold); color: var(--goldlt); }
+
+/* ── CASE STUDY CALLOUT ── */
+.callout {
+  margin-top: 40px;
+  border-left: 4px solid var(--fire);
+  padding: 24px 28px;
+  background: var(--white);
+}
+.callout-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--fire);
+  margin-bottom: 10px;
+}
+.callout-quote {
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.callout-source {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+/* ── DISCLAIMER BANNER ── */
+.disclaimer {
+  background: #FFF8EC;
+  border-bottom: 1px solid rgba(201,149,42,0.25);
+  padding: 12px 48px;
+}
+.disclaimer-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.disclaimer-icon {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(201,149,42,0.12);
+  padding: 3px 8px;
+  white-space: nowrap;
+  margin-top: 1px;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+.disclaimer-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+.disclaimer-text strong { color: var(--ink); font-weight: 700; }
+
+/* ── IMAGE CREDIT ── */
+.img-credit {
+  position: absolute;
+  bottom: 14px;
+  right: 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  text-align: right;
+  z-index: 2;
+  pointer-events: none;
+}
+.img-credit a {
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  pointer-events: all;
+}
+.img-credit a:hover { color: rgba(255,255,255,0.8); text-decoration: underline; }
+
+/* ── LEGAL FOOTER ── */
+.legal-footer {
+  background: var(--ink);
+  border-top: 1px solid rgba(201,149,42,0.15);
+  padding: 28px 48px;
+}
+.legal-footer-inner {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.legal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 20px;
+}
+.legal-col-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--fire);
+  margin-bottom: 8px;
+}
+.legal-col-body {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+.legal-col-body a { color: var(--silver); text-decoration: none; }
+.legal-col-body a:hover { color: var(--goldlt); text-decoration: underline; }
+.legal-divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 16px;
+}
+.legal-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.legal-brand {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+}
+.legal-brand em { font-style: normal; color: var(--goldlt); }
+.legal-copy {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+/* ── UAE PILOT BANNER ── */
+.pilot-banner {
+  background: var(--ink);
+  border-top: 3px solid var(--fire);
+  border-bottom: 1px solid rgba(201,149,42,0.2);
+  margin-top: 48px;
+}
+.pilot-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 48px;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 48px;
+  align-items: start;
+}
+.pilot-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--fire);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pilot-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--fire);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+}
+.pilot-headline {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.15;
+  margin-bottom: 18px;
+}
+.pilot-headline em { font-style: italic; color: var(--goldlt); }
+.pilot-body {
+  font-size: 16px;
+  color: var(--silver);
+  line-height: 1.75;
+  font-weight: 300;
+  margin-bottom: 22px;
+  max-width: 560px;
+}
+.pilot-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.ptag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid rgba(201,149,42,0.3);
+  padding: 5px 12px;
+  background: rgba(201,149,42,0.06);
+}
+.pilot-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+.pilot-stat-block {
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.pilot-stat-block:last-of-type { border-bottom: none; }
+.pilot-stat-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.pilot-stat-val {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--goldlt);
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.pilot-stat-note {
+  font-size: 11px;
+  color: var(--muted);
+  font-style: italic;
+}
+.pilot-cta {
+  display: block;
+  background: var(--fire);
+  color: var(--white);
+  text-decoration: none;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  padding: 16px 22px;
+  text-align: center;
+  transition: background 0.2s;
+  margin-top: 0;
+}
+.pilot-cta:hover { background: #c94208; }
+
+/* ── PARTNER SECTION ── */
+.partner-section {
+  background: var(--cream);
+  border-top: 1px solid rgba(10,22,40,0.08);
+  padding: 0;
+}
+.partner-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 56px 48px 48px;
+}
+.partner-header {
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(10,22,40,0.08);
+}
+.partner-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--fire);
+  margin-bottom: 10px;
+}
+.partner-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 14px;
+}
+.partner-title em { font-style: italic; color: var(--fire); }
+.partner-subtitle {
+  font-size: 17px;
+  color: var(--muted);
+  line-height: 1.75;
+  font-weight: 300;
+  max-width: 680px;
+}
+.partner-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+  margin-bottom: 28px;
+}
+.partner-logo-card {
+  background: var(--ink);
+  padding: 28px 22px;
+  text-align: center;
+  position: sticky;
+  top: 80px;
+}
+.partner-logo-mark {
+  width: 56px; height: 56px;
+  background: var(--fire);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0 auto 14px;
+}
+.partner-logo-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 5px;
+}
+.partner-logo-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.partner-logo-hq {
+  font-size: 11px;
+  color: var(--muted);
+  font-style: italic;
+}
+.partner-what-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--fire);
+  margin-bottom: 18px;
+}
+.partner-capability-list { display: flex; flex-direction: column; gap: 16px; }
+.pcap {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(10,22,40,0.06);
+}
+.pcap:last-child { border-bottom: none; padding-bottom: 0; }
+.pcap-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+  margin-top: 2px;
+}
+.pcap-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.pcap-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.65;
+  font-weight: 300;
+}
+.partner-flow { display: flex; flex-direction: column; gap: 0; margin-bottom: 20px; }
+.pflow-step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: var(--white);
+  padding: 16px 18px;
+  border: 1px solid rgba(10,22,40,0.07);
+  border-bottom: none;
+}
+.pflow-step:last-of-type { border-bottom: 1px solid rgba(10,22,40,0.07); }
+.pflow-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--fire);
+  flex-shrink: 0;
+  width: 24px;
+  margin-top: 2px;
+}
+.pflow-text {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.65;
+  font-weight: 300;
+}
+.pflow-text strong { color: var(--ink); font-weight: 600; }
+.pflow-arrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  color: var(--fire);
+  text-align: center;
+  padding: 4px 0;
+  opacity: 0.5;
+}
+.partner-result {
+  background: var(--ink);
+  padding: 18px 20px;
+  margin-top: 12px;
+}
+.partner-result-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.partner-result-val {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--white);
+  font-style: italic;
+  line-height: 1.4;
+}
+.partner-disclaimer {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+  border-top: 1px solid rgba(10,22,40,0.08);
+  padding-top: 20px;
+}
+.partner-disclaimer a { color: var(--fire); text-decoration: none; }
+.partner-disclaimer a:hover { text-decoration: underline; }
+
+@media (max-width: 720px) {
+  .pilot-inner { grid-template-columns: 1fr; padding: 28px 20px; }
+  .pilot-right { display: grid; grid-template-columns: 1fr 1fr; }
+  .partner-grid { grid-template-columns: 1fr; }
+  .partner-logo-card { position: static; }
+  .partner-inner { padding: 32px 20px; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-label">Interactive Tool</div>
+      <div class="brand">
+        <div class="brand-en">MAKEEN <span>ROBOTICS</span></div>
+        <div class="brand-ar">مَكِين</div>
+      </div>
+      <div class="header-subtitle">ROI & Business Case Calculator</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Power in Every Motion</div>
+      <div style="font-size:13px;color:var(--silver);font-style:italic;">Dubai, UAE · GCC Market Figures</div>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab active" onclick="showPanel('serving')">🤖 Serving Robots</button>
+    <button class="tab" onclick="showPanel('robodog')">🐕 Robo-Dog Security</button>
+    <button class="tab" onclick="showPanel('laundry')">👔 Humanoid Laundry</button>
+  </div>
+</div>
+
+<!-- DISCLAIMER BANNER -->
+<div class="disclaimer">
+  <div class="disclaimer-inner">
+    <div class="disclaimer-icon">⚠ NOTE</div>
+    <div class="disclaimer-text">
+      <strong>For illustrative purposes only.</strong> All figures, case studies, and ROI projections on this page are <strong>representative estimates</strong> based on published GCC and global market research. They are not guarantees of performance. Actual results will vary based on your specific operation, deployment scale, and market conditions. <strong>Contact Makeen Robotics for a site-specific business case and formal proposal.</strong>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════
+     PANEL 1 — SERVING ROBOTS
+═══════════════════════════════════════════ -->
+<div class="case-panel active" id="panel-serving">
+
+  <div class="case-hero">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Relay_delivery_robot_in_a_hotel_corridor.jpg/1280px-Relay_delivery_robot_in_a_hotel_corridor.jpg"
+         onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg,#0A1628 0%,#1C3455 60%,#2a1a0a 100%)'"
+         alt="Delivery robot in hotel corridor">
+    <div class="case-hero-overlay">
+      <div class="case-eyebrow">Use Case 01 — Standalone · F&B / Hospitality</div>
+      <h1 class="case-title">Serving <em>Robots</em></h1>
+      <p class="case-desc">Autonomous tray-delivery robots handle front-of-house service, freeing staff for guest engagement. Operates 8–12 hrs per charge. 1 robot per 12–15 tables.</p>
+    </div>
+    <div class="case-hero-bar"></div>
+    <div class="img-credit">Image: Relay delivery robot · <a href="https://commons.wikimedia.org/wiki/File:Relay_delivery_robot_in_a_hotel_corridor.jpg" target="_blank">Wikimedia Commons</a> · CC BY-SA 4.0</div>
+  </div>
+
+  <!-- Market stats -->
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-label">Labor cost saving</div>
+      <div class="stat-val">30%</div>
+      <div class="stat-note">Documented in GCC/APAC deployments</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Avg. payback period</div>
+      <div class="stat-val">12–18mo</div>
+      <div class="stat-note">High-volume F&B, ≥2 shifts/day</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">3-year ROI</div>
+      <div class="stat-val">80–124%</div>
+      <div class="stat-note">Source: Culinary Services Group 2024</div>
+    </div>
+  </div>
+
+  <!-- Calculator -->
+  <div class="calc-grid">
+    <div class="inputs-block">
+      <div class="inputs-title">Your Operation</div>
+
+      <div class="field">
+        <label>Number of robots deployed</label>
+        <div class="field-row">
+          <input type="range" id="srv-qty" min="1" max="10" value="3" oninput="calcServing()">
+          <div class="field-val" id="srv-qty-v">3</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Monthly robot lease per unit (USD)</label>
+        <div class="field-row">
+          <input type="range" id="srv-lease" min="800" max="2500" step="100" value="1200" oninput="calcServing()">
+          <div class="field-val" id="srv-lease-v">$1,200</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Staff replaced (FTEs) per robot</label>
+        <div class="field-row">
+          <input type="range" id="srv-fte" min="0.5" max="2" step="0.5" value="1" oninput="calcServing()">
+          <div class="field-val" id="srv-fte-v">1.0</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Monthly staff cost per FTE (USD)</label>
+        <div class="field-row">
+          <input type="range" id="srv-salary" min="800" max="3000" step="100" value="1500" oninput="calcServing()">
+          <div class="field-val" id="srv-salary-v">$1,500</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Estimated revenue uplift per robot / month (USD)</label>
+        <div class="field-row">
+          <input type="range" id="srv-uplift" min="0" max="2000" step="100" value="500" oninput="calcServing()">
+          <div class="field-val" id="srv-uplift-v">$500</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-block">
+      <div class="results-title">Your ROI Estimate</div>
+      <div class="result-primary">
+        <div class="result-primary-label">Annual net benefit</div>
+        <div class="result-big" id="srv-annual">$0</div>
+        <div class="result-sub">After robot lease costs</div>
+      </div>
+      <div class="result-rows">
+        <div class="result-row">
+          <div class="rr-label">Monthly robot cost</div>
+          <div class="rr-val highlight" id="srv-cost-mo">$0</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Monthly labor savings</div>
+          <div class="rr-val positive" id="srv-labor-mo">$0</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Monthly revenue uplift</div>
+          <div class="rr-val positive" id="srv-rev-mo">$0</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Monthly net gain</div>
+          <div class="rr-val positive" id="srv-net-mo">$0</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">3-year cumulative saving</div>
+          <div class="rr-val positive" id="srv-3yr">$0</div>
+        </div>
+      </div>
+      <div class="payback-bar-wrap">
+        <div class="payback-bar-label">
+          <span>Payback period</span>
+          <span id="srv-payback-label">— months</span>
+        </div>
+        <div class="payback-track">
+          <div class="payback-fill" id="srv-payback-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="cta-row">
+        <button class="btn-primary" onclick="alert('Contact Makeen Robotics for a full proposal.')">Get a Quote</button>
+        <button class="btn-secondary" onclick="alert('Schedule a live demo with our team.')">Book Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-eyebrow">Real-World Reference · Qatar Hospitality Study 2025</div>
+    <div class="callout-quote">"AI-driven service robots achieved positive ROI within 2.7 years on average, with labor substitution ratios reaching 0.72 and operational efficiency gains exceeding 38%."</div>
+    <div class="callout-source">International Journal of Science and Research Archive, 2025 · GCC Market Context</div>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PANEL 2 — ROBO-DOG SECURITY
+═══════════════════════════════════════════ -->
+<div class="case-panel" id="panel-robodog">
+
+  <div class="case-hero">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Boston_Dynamics_Spot_Robot.jpg/1280px-Boston_Dynamics_Spot_Robot.jpg"
+         onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg,#0A1628 0%,#0d2035 60%,#1a0a0a 100%)'"
+         alt="Boston Dynamics Spot robot dog">
+    <div class="case-hero-overlay">
+      <div class="case-eyebrow">Use Case 02 — Enterprise · Security & Surveillance</div>
+      <h1 class="case-title">Robo-Dog <em>Security</em></h1>
+      <p class="case-desc">Quadruped patrol robots autonomously cover hotel grounds, parking, and perimeters 24/7. Thermal cameras, LiDAR, and AI anomaly detection — without fatigue.</p>
+    </div>
+    <div class="case-hero-bar"></div>
+    <div class="img-credit">Image: Boston Dynamics Spot · <a href="https://commons.wikimedia.org/wiki/File:Boston_Dynamics_Spot_Robot.jpg" target="_blank">Wikimedia Commons</a> · CC BY-SA 4.0</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-label">Security labor reduction</div>
+      <div class="stat-val">30–50%</div>
+      <div class="stat-note">Within 18 months (Greenbotz, 2024)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Incident response time</div>
+      <div class="stat-val">−34%</div>
+      <div class="stat-note">Faster detection vs. CCTV-only</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Market growth CAGR</div>
+      <div class="stat-val">27%</div>
+      <div class="stat-note">Security robots 2024–2030</div>
+    </div>
+  </div>
+
+  <div class="calc-grid">
+    <div class="inputs-block">
+      <div class="inputs-title">Your Security Operation</div>
+
+      <div class="field">
+        <label>Number of robo-dogs deployed</label>
+        <div class="field-row">
+          <input type="range" id="dog-qty" min="1" max="6" value="2" oninput="calcDog()">
+          <div class="field-val" id="dog-qty-v">2</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Robot purchase price per unit (USD)</label>
+        <div class="field-row">
+          <input type="range" id="dog-price" min="30000" max="150000" step="5000" value="75000" oninput="calcDog()">
+          <div class="field-val" id="dog-price-v">$75,000</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Annual maintenance per unit (USD)</label>
+        <div class="field-row">
+          <input type="range" id="dog-maint" min="3000" max="15000" step="500" value="7000" oninput="calcDog()">
+          <div class="field-val" id="dog-maint-v">$7,000</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Night-shift guards replaced</label>
+        <div class="field-row">
+          <input type="range" id="dog-guards" min="1" max="8" value="3" oninput="calcDog()">
+          <div class="field-val" id="dog-guards-v">3</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Monthly guard cost per person (USD)</label>
+        <div class="field-row">
+          <input type="range" id="dog-gsalary" min="800" max="3000" step="100" value="1400" oninput="calcDog()">
+          <div class="field-val" id="dog-gsalary-v">$1,400</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Insurance premium saving / year (USD)</label>
+        <div class="field-row">
+          <input type="range" id="dog-ins" min="0" max="20000" step="500" value="5000" oninput="calcDog()">
+          <div class="field-val" id="dog-ins-v">$5,000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-block">
+      <div class="results-title">Your ROI Estimate</div>
+      <div class="result-primary">
+        <div class="result-primary-label">Annual net benefit</div>
+        <div class="result-big" id="dog-annual">$0</div>
+        <div class="result-sub">After capex amortisation + maintenance</div>
+      </div>
+      <div class="result-rows">
+        <div class="result-row">
+          <div class="rr-label">Total capex (yr 1)</div>
+          <div class="rr-val highlight" id="dog-capex">$0</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Annual guard savings</div>
+          <div class="rr-val positive" id="dog-guard-save">$0</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Annual maintenance cost</div>
+          <div class="rr-val highlight" id="dog-maint-cost">$0</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Insurance savings</div>
+          <div class="rr-val positive" id="dog-ins-save">$0</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">3-year net benefit</div>
+          <div class="rr-val positive" id="dog-3yr">$0</div>
+        </div>
+      </div>
+      <div class="payback-bar-wrap">
+        <div class="payback-bar-label">
+          <span>Payback period</span>
+          <span id="dog-payback-label">— months</span>
+        </div>
+        <div class="payback-track">
+          <div class="payback-fill" id="dog-payback-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="cta-row">
+        <button class="btn-primary" onclick="alert('Contact Makeen Robotics for a security assessment.')">Security Audit</button>
+        <button class="btn-secondary" onclick="alert('Schedule a live demo with our team.')">Book Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-eyebrow">Real-World Reference · Singapore & GCC Deployments 2024</div>
+    <div class="callout-quote">"Typical deployments cut security labor hours by 30–50% within 18 months. Insurers including AIG and Zurich now offer discounted premiums for facilities with certified robotic patrols."</div>
+    <div class="callout-source">Greenbotz Security Research Division · 2024 Deployment Study</div>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PANEL 3 — HUMANOID LAUNDRY
+═══════════════════════════════════════════ -->
+<div class="case-panel" id="panel-laundry">
+
+  <div class="case-hero">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Toyota_HSR_robot.jpg/1280px-Toyota_HSR_robot.jpg"
+         onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg,#0A1628 0%,#112240 60%,#0a1a12 100%)'"
+         alt="Humanoid service robot">
+    <div class="case-hero-overlay">
+      <div class="case-eyebrow">Use Case 03 — Enterprise · Hotel Back-of-House</div>
+      <h1 class="case-title">Humanoid <em>Laundry</em></h1>
+      <p class="case-desc">Humanoid and dedicated folding robots process hundreds of kilos of hotel linen daily — sorting, folding, and transporting — integrated with housekeeping schedules.</p>
+    </div>
+    <div class="case-hero-bar"></div>
+    <div class="img-credit">Image: Toyota HSR service robot · <a href="https://commons.wikimedia.org/wiki/File:Toyota_HSR_robot.jpg" target="_blank">Wikimedia Commons</a> · CC BY-SA 4.0</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-label">Linen processed / day</div>
+      <div class="stat-val">300+kg</div>
+      <div class="stat-note">TechForce TIM-E, Homewood Suites</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Housekeeping time freed</div>
+      <div class="stat-val">~35%</div>
+      <div class="stat-note">Redeployed to guest-facing tasks</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Market CAGR (2024–30)</div>
+      <div class="stat-val">36.5%</div>
+      <div class="stat-note">Laundry folding robot market</div>
+    </div>
+  </div>
+
+  <div class="calc-grid">
+    <div class="inputs-block">
+      <div class="inputs-title">Your Hotel Operation</div>
+
+      <div class="field">
+        <label>Hotel rooms (total)</label>
+        <div class="field-row">
+          <input type="range" id="lau-rooms" min="50" max="500" step="10" value="150" oninput="calcLaundry()">
+          <div class="field-val" id="lau-rooms-v">150</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Laundry/linen staff (FTEs)</label>
+        <div class="field-row">
+          <input type="range" id="lau-fte" min="2" max="20" value="6" oninput="calcLaundry()">
+          <div class="field-val" id="lau-fte-v">6</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Monthly staff cost per FTE (USD)</label>
+        <div class="field-row">
+          <input type="range" id="lau-salary" min="600" max="2500" step="100" value="1200" oninput="calcLaundry()">
+          <div class="field-val" id="lau-salary-v">$1,200</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Robot system cost (USD, one-time)</label>
+        <div class="field-row">
+          <input type="range" id="lau-capex" min="20000" max="250000" step="5000" value="80000" oninput="calcLaundry()">
+          <div class="field-val" id="lau-capex-v">$80,000</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Annual maintenance (USD)</label>
+        <div class="field-row">
+          <input type="range" id="lau-maint" min="2000" max="20000" step="1000" value="8000" oninput="calcLaundry()">
+          <div class="field-val" id="lau-maint-v">$8,000</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>% of laundry tasks automated</label>
+        <div class="field-row">
+          <input type="range" id="lau-pct" min="20" max="80" step="5" value="40" oninput="calcLaundry()">
+          <div class="field-val" id="lau-pct-v">40%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-block">
+      <div class="results-title">Your ROI Estimate</div>
+      <div class="result-primary">
+        <div class="result-primary-label">Annual net benefit</div>
+        <div class="result-big" id="lau-annual">$0</div>
+        <div class="result-sub">After capex amortisation + maintenance</div>
+      </div>
+      <div class="result-rows">
+        <div class="result-row">
+          <div class="rr-label">Yr 1 capex</div>
+          <div class="rr-val highlight" id="lau-capex-out">$0</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Annual labor freed</div>
+          <div class="rr-val positive" id="lau-labor-save">$0</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">Annual maintenance</div>
+          <div class="rr-val highlight" id="lau-maint-out">$0</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">FTEs redeployed</div>
+          <div class="rr-val positive" id="lau-fte-freed">0</div>
+        </div>
+        <div class="result-row">
+          <div class="rr-label">3-year net benefit</div>
+          <div class="rr-val positive" id="lau-3yr">$0</div>
+        </div>
+      </div>
+      <div class="payback-bar-wrap">
+        <div class="payback-bar-label">
+          <span>Payback period</span>
+          <span id="lau-payback-label">— months</span>
+        </div>
+        <div class="payback-track">
+          <div class="payback-fill" id="lau-payback-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="cta-row">
+        <button class="btn-primary" onclick="alert('Contact Makeen Robotics for a hotel automation proposal.')">Get a Proposal</button>
+        <button class="btn-secondary" onclick="alert('Schedule a live demo with our team.')">Book Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-eyebrow">Real-World Reference · TechForce Robotics, Homewood Suites, Feb 2026</div>
+    <div class="callout-quote">"Instead of a human having to move several hundred pounds throughout the day, the robot does that — so housekeepers can focus more on the task versus the heavy lifting."</div>
+    <div class="callout-source">Hotel Dive, February 25 2026 · TechForce TIM-E Installation Report</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     UAE PILOT REFERENCE BANNER
+═══════════════════════════════════════════ -->
+<div class="pilot-banner">
+  <div class="pilot-inner">
+    <div class="pilot-left">
+      <div class="pilot-eyebrow">Live Engagement · UAE · 2026</div>
+      <div class="pilot-headline">Makeen is working with a <em>UAE hotel operator</em> to automate their workflows.</div>
+      <div class="pilot-body">We are currently in active discussions with a hospitality group in the UAE with a view to deploying robotic automation across housekeeping, laundry, and in-room service operations. This engagement is shaping our deployment playbook for the GCC market. If you operate hotels, resorts, or F&B properties in the region and want to be part of the next wave — talk to us.</div>
+      <div class="pilot-tags">
+        <span class="ptag">Housekeeping Automation</span>
+        <span class="ptag">Laundry Robotics</span>
+        <span class="ptag">In-Room Service</span>
+        <span class="ptag">GCC · UAE</span>
+      </div>
+    </div>
+    <div class="pilot-right">
+      <div class="pilot-stat-block">
+        <div class="pilot-stat-label">Engagement status</div>
+        <div class="pilot-stat-val">Active</div>
+        <div class="pilot-stat-note">Workflow mapping underway</div>
+      </div>
+      <div class="pilot-stat-block">
+        <div class="pilot-stat-label">Region</div>
+        <div class="pilot-stat-val">UAE</div>
+        <div class="pilot-stat-note">GCC expansion planned</div>
+      </div>
+      <div class="pilot-stat-block">
+        <div class="pilot-stat-label">Sector</div>
+        <div class="pilot-stat-val">Hospitality</div>
+        <div class="pilot-stat-note">Hotels & resorts</div>
+      </div>
+      <a class="pilot-cta" href="mailto:hello@makeenrobotics.com">Discuss Your Property →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TECHNOLOGY PARTNER — SIRONA
+═══════════════════════════════════════════ -->
+<div class="partner-section">
+  <div class="partner-inner">
+
+    <div class="partner-header">
+      <div class="partner-eyebrow">Technology Partner</div>
+      <div class="partner-title">Powered by <em>enterprise-grade</em> robotics infrastructure.</div>
+      <div class="partner-subtitle">For complex enterprise deployments, Makeen Robotics partners with Sirona Robotics — the platform layer that orchestrates, trains, and integrates robot workers into large-scale operations.</div>
+    </div>
+
+    <div class="partner-grid">
+
+      <div class="partner-logo-card">
+        <div class="partner-logo-mark">SR</div>
+        <div class="partner-logo-name">Sirona Robotics</div>
+        <div class="partner-logo-tag">Enterprise Platform Layer</div>
+        <div class="partner-logo-hq">📍 Singapore · sironarobotics.com</div>
+      </div>
+
+      <div class="partner-what">
+        <div class="partner-what-title">What Sirona brings</div>
+        <div class="partner-capability-list">
+          <div class="pcap">
+            <div class="pcap-icon">⚙</div>
+            <div>
+              <div class="pcap-name">Co-Pilot Orchestration</div>
+              <div class="pcap-desc">Fleet-level task assignment, scheduling, and coordination — managing multiple robots concurrently across a property without human intervention.</div>
+            </div>
+          </div>
+          <div class="pcap">
+            <div class="pcap-icon">🔗</div>
+            <div>
+              <div class="pcap-name">Enterprise System Integration</div>
+              <div class="pcap-desc">Native connectors to PMS (Opera, Amadeus), SAP, ERP, and LIMS — bi-directional data flow and compliance audit trails across all hotel systems.</div>
+            </div>
+          </div>
+          <div class="pcap">
+            <div class="pcap-icon">🧠</div>
+            <div>
+              <div class="pcap-name">Adaptive Training Framework</div>
+              <div class="pcap-desc">On-device and cloud pipelines that teach robots facility-specific layouts, SOPs, and edge-case behaviours — reducing deployment time at every new site.</div>
+            </div>
+          </div>
+          <div class="pcap">
+            <div class="pcap-icon">🔒</div>
+            <div>
+              <div class="pcap-name">Data Sovereignty</div>
+              <div class="pcap-desc">Full on-premises and air-gapped deployment available. Operational data never shared with hardware vendors. Built for GMP, ISO 17025, PDPA compliance.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="partner-how">
+        <div class="partner-what-title">How Makeen + Sirona work together</div>
+        <div class="partner-flow">
+          <div class="pflow-step">
+            <div class="pflow-num">01</div>
+            <div class="pflow-text"><strong>Makeen</strong> sources, procures, and represents the hardware — serving robots, robo-dogs, humanoids — from leading global manufacturers.</div>
+          </div>
+          <div class="pflow-arrow">↓</div>
+          <div class="pflow-step">
+            <div class="pflow-num">02</div>
+            <div class="pflow-text"><strong>Makeen</strong> implements on-site — physical installation, network setup, staff orientation, and UAE regulatory compliance.</div>
+          </div>
+          <div class="pflow-arrow">↓</div>
+          <div class="pflow-step">
+            <div class="pflow-num">03</div>
+            <div class="pflow-text"><strong>Sirona's Co-Pilot platform</strong> integrates robots with the hotel's PMS and workflows — orchestrating tasks, logging every action, and continuously improving performance.</div>
+          </div>
+          <div class="pflow-arrow">↓</div>
+          <div class="pflow-step">
+            <div class="pflow-num">04</div>
+            <div class="pflow-text"><strong>Makeen</strong> provides ongoing maintenance, SLA management, and GCC-based support — Sirona handles platform updates and model retraining remotely.</div>
+          </div>
+        </div>
+        <div class="partner-result">
+          <div class="partner-result-label">The result for your hotel</div>
+          <div class="partner-result-val">Hardware + Platform + Local Support — as one managed service.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="partner-disclaimer">
+      Sirona Robotics is an independent company incorporated in Singapore. The Makeen–Sirona partnership covers GCC enterprise deployments. All Sirona platform capabilities, trademarks, and intellectual property remain the property of Sirona Robotics Pte Ltd. <a href="https://www.sironarobotics.com" target="_blank">www.sironarobotics.com</a>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- LEGAL FOOTER -->
+<div class="legal-footer">
+  <div class="legal-footer-inner">
+    <div class="legal-grid">
+
+      <div>
+        <div class="legal-col-title">Disclaimer</div>
+        <div class="legal-col-body">
+          All ROI figures, payback periods, and financial projections on this page are <strong style="color:var(--silver)">representative estimates for illustrative purposes only.</strong> They are derived from published third-party market research and do not constitute financial advice or guaranteed outcomes. Actual results depend on deployment scale, local labour costs, and operational context. Makeen Robotics accepts no liability for decisions made on the basis of these estimates.
+        </div>
+      </div>
+
+      <div>
+        <div class="legal-col-title">Case Studies</div>
+        <div class="legal-col-body">
+          The case studies presented are <strong style="color:var(--silver)">sample scenarios</strong> constructed from aggregated industry data, including sources from the International Journal of Science and Research Archive (2025), Greenbotz Security Research (2024), Hotel Dive (2026), and Culinary Services Group (2024). They do not represent specific Makeen Robotics client deployments. Reference citations are available on request.
+        </div>
+      </div>
+
+      <div>
+        <div class="legal-col-title">Image Credits</div>
+        <div class="legal-col-body">
+          Images are used under open licences and credited to their respective owners:<br><br>
+          · <strong style="color:var(--silver)">Serving robot</strong> — Relay delivery robot in a hotel corridor. <a href="https://commons.wikimedia.org/wiki/File:Relay_delivery_robot_in_a_hotel_corridor.jpg" target="_blank">Wikimedia Commons</a>, CC BY-SA 4.0.<br><br>
+          · <strong style="color:var(--silver)">Security robo-dog</strong> — Boston Dynamics Spot robot. <a href="https://commons.wikimedia.org/wiki/File:Boston_Dynamics_Spot_Robot.jpg" target="_blank">Wikimedia Commons</a>, CC BY-SA 4.0.<br><br>
+          · <strong style="color:var(--silver)">Humanoid / laundry</strong> — Toyota HSR service robot. <a href="https://commons.wikimedia.org/wiki/File:Toyota_HSR_robot.jpg" target="_blank">Wikimedia Commons</a>, CC BY-SA 4.0.<br><br>
+          Makeen Robotics does not claim ownership of these images. All trademarks remain the property of their respective owners.
+        </div>
+      </div>
+
+    </div>
+    <hr class="legal-divider">
+    <div class="legal-bottom">
+      <div class="legal-brand">MAKEEN <em>ROBOTICS</em> &nbsp;·&nbsp; <span style="font-family:'Noto Naskh Arabic',serif;font-size:16px;color:var(--gold);">مَكِين</span></div>
+      <div class="legal-copy">© 2026 Makeen Robotics LLC · Dubai, UAE · All rights reserved<br>For a formal business case, contact: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="eb838e878784ab868a808e8e85998489849f828898c5888486">[email&#160;protected]</a></div>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function fmt(n) {
+  if (Math.abs(n) >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+  if (Math.abs(n) >= 1000) return '$' + Math.round(n/1000) + 'K';
+  return '$' + Math.round(n).toLocaleString();
+}
+
+function setPayback(annualSaving, totalCost, barId, labelId) {
+  const el = document.getElementById(barId);
+  const lbl = document.getElementById(labelId);
+  if (annualSaving <= 0) {
+    el.style.width = '0%';
+    lbl.textContent = 'N/A';
+    return;
+  }
+  const months = (totalCost / annualSaving) * 12;
+  const capped = Math.min(months, 36);
+  const pct = ((36 - capped) / 36) * 100;
+  el.style.width = pct + '%';
+  lbl.textContent = months <= 36 ? Math.round(months) + ' months' : '>36 months';
+}
+
+// ── SERVING ROBOT ──
+function calcServing() {
+  const qty = +document.getElementById('srv-qty').value;
+  const lease = +document.getElementById('srv-lease').value;
+  const fte = +document.getElementById('srv-fte').value;
+  const salary = +document.getElementById('srv-salary').value;
+  const uplift = +document.getElementById('srv-uplift').value;
+
+  document.getElementById('srv-qty-v').textContent = qty;
+  document.getElementById('srv-lease-v').textContent = '$' + lease.toLocaleString();
+  document.getElementById('srv-fte-v').textContent = fte.toFixed(1);
+  document.getElementById('srv-salary-v').textContent = '$' + salary.toLocaleString();
+  document.getElementById('srv-uplift-v').textContent = '$' + uplift.toLocaleString();
+
+  const costMo = qty * lease;
+  const laborMo = qty * fte * salary;
+  const revMo = qty * uplift;
+  const netMo = laborMo + revMo - costMo;
+  const annual = netMo * 12;
+  const yr3 = netMo * 36;
+
+  document.getElementById('srv-cost-mo').textContent = fmt(costMo);
+  document.getElementById('srv-labor-mo').textContent = fmt(laborMo);
+  document.getElementById('srv-rev-mo').textContent = fmt(revMo);
+  document.getElementById('srv-net-mo').textContent = fmt(netMo);
+  document.getElementById('srv-annual').textContent = fmt(annual);
+  document.getElementById('srv-3yr').textContent = fmt(yr3);
+
+  setPayback(netMo * 12, costMo * 3, 'srv-payback-bar', 'srv-payback-label');
+}
+
+// ── ROBO-DOG ──
+function calcDog() {
+  const qty = +document.getElementById('dog-qty').value;
+  const price = +document.getElementById('dog-price').value;
+  const maint = +document.getElementById('dog-maint').value;
+  const guards = +document.getElementById('dog-guards').value;
+  const gsalary = +document.getElementById('dog-gsalary').value;
+  const ins = +document.getElementById('dog-ins').value;
+
+  document.getElementById('dog-qty-v').textContent = qty;
+  document.getElementById('dog-price-v').textContent = '$' + price.toLocaleString();
+  document.getElementById('dog-maint-v').textContent = '$' + maint.toLocaleString();
+  document.getElementById('dog-guards-v').textContent = guards;
+  document.getElementById('dog-gsalary-v').textContent = '$' + gsalary.toLocaleString();
+  document.getElementById('dog-ins-v').textContent = '$' + ins.toLocaleString();
+
+  const capex = qty * price;
+  const annualMaint = qty * maint;
+  const annualGuardSave = guards * gsalary * 12;
+  const annualNet = annualGuardSave + ins - annualMaint - (capex / 5); // 5yr capex spread
+  const yr3 = annualGuardSave * 3 + ins * 3 - annualMaint * 3 - capex;
+
+  document.getElementById('dog-capex').textContent = fmt(capex);
+  document.getElementById('dog-guard-save').textContent = fmt(annualGuardSave);
+  document.getElementById('dog-maint-cost').textContent = fmt(annualMaint);
+  document.getElementById('dog-ins-save').textContent = fmt(ins);
+  document.getElementById('dog-annual').textContent = fmt(annualNet);
+  document.getElementById('dog-3yr').textContent = fmt(yr3);
+
+  setPayback(annualGuardSave + ins - annualMaint, capex, 'dog-payback-bar', 'dog-payback-label');
+}
+
+// ── LAUNDRY ──
+function calcLaundry() {
+  const rooms = +document.getElementById('lau-rooms').value;
+  const fte = +document.getElementById('lau-fte').value;
+  const salary = +document.getElementById('lau-salary').value;
+  const capex = +document.getElementById('lau-capex').value;
+  const maint = +document.getElementById('lau-maint').value;
+  const pct = +document.getElementById('lau-pct').value / 100;
+
+  document.getElementById('lau-rooms-v').textContent = rooms;
+  document.getElementById('lau-fte-v').textContent = fte;
+  document.getElementById('lau-salary-v').textContent = '$' + salary.toLocaleString();
+  document.getElementById('lau-capex-v').textContent = '$' + capex.toLocaleString();
+  document.getElementById('lau-maint-v').textContent = '$' + maint.toLocaleString();
+  document.getElementById('lau-pct-v').textContent = Math.round(pct * 100) + '%';
+
+  const annualLaborTotal = fte * salary * 12;
+  const laborFreed = annualLaborTotal * pct;
+  const fteFreed = (fte * pct).toFixed(1);
+  const annualNet = laborFreed - maint - (capex / 5);
+  const yr3 = laborFreed * 3 - maint * 3 - capex;
+
+  document.getElementById('lau-capex-out').textContent = fmt(capex);
+  document.getElementById('lau-labor-save').textContent = fmt(laborFreed);
+  document.getElementById('lau-maint-out').textContent = fmt(maint);
+  document.getElementById('lau-fte-freed').textContent = fteFreed + ' FTEs';
+  document.getElementById('lau-annual').textContent = fmt(annualNet);
+  document.getElementById('lau-3yr').textContent = fmt(yr3);
+
+  setPayback(laborFreed - maint, capex, 'lau-payback-bar', 'lau-payback-label');
+}
+
+// Tab switching
+function showPanel(id) {
+  document.querySelectorAll('.case-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forE

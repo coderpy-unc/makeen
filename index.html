@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Makeen Robotics — Power in Every Motion</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0A1628;--ink2:#112240;--ink3:#1C3455;--fire:#E8500A;--fire2:#C94208;--gold:#C9952A;--goldlt:#E8B84B;--silver:#C0C8D8;--muted:#6B7A8D;--cream:#F5F0E8;--white:#fff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--ink);color:var(--cream);overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+.mono{font-family:'Space Mono',monospace;}
+.wrap{max-width:1100px;margin:0 auto;padding:0 40px;}
+.ey{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--fire);margin-bottom:12px;}
+.ey.gold{color:var(--gold);}
+.sh{font-size:clamp(32px,4.5vw,52px);font-weight:700;line-height:1.05;color:var(--white);}
+.sh em{font-style:italic;color:var(--goldlt);}
+.sh.dk{color:var(--ink);}
+.sh.dk em{color:var(--fire);}
+.prose{font-size:17px;font-weight:300;color:var(--silver);line-height:1.8;}
+.btn{display:inline-block;padding:14px 28px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-fire{background:var(--fire);color:var(--white);}
+.btn-fire:hover{background:var(--fire2);}
+.btn-ghost{background:transparent;color:var(--silver);border:1px solid rgba(192,200,216,.3);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--goldlt);}
+.btn-gold{background:transparent;border:1px solid var(--gold);color:var(--goldlt);}
+.btn-gold:hover{background:rgba(201,149,42,.1);}
+.sec{padding:88px 0;}
+.sec-dark{background:var(--ink);}
+.sec-mid{background:#0D1E35;}
+.sec-dk2{background:var(--ink2);}
+.sec-light{background:var(--cream);color:var(--ink);}
+.sec-hd{margin-bottom:48px;}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;height:68px;background:rgba(10,22,40,.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,149,42,.15);z-index:999;display:flex;align-items:center;}
+.nav-in{max-width:1100px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;width:100%;}
+.nav-brand{display:flex;align-items:baseline;gap:12px;}
+.nb-en{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--white);letter-spacing:.08em;}
+.nb-en span{color:var(--goldlt);}
+.nb-ar{font-family:'Noto Naskh Arabic',serif;font-size:17px;color:var(--gold);}
+.nav-links{display:flex;align-items:center;gap:28px;list-style:none;}
+.nav-links a{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--silver);transition:color .2s;}
+.nav-links a:hover{color:var(--goldlt);}
+.nav-cta{background:var(--fire)!important;color:var(--white)!important;padding:9px 18px;}
+.nav-cta:hover{background:var(--fire2)!important;}
+@media(max-width:768px){.nav-links{display:none;}}
+
+/* HERO */
+.hero{min-height:100vh;padding-top:68px;background:var(--ink);position:relative;display:flex;align-items:center;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(201,149,42,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,149,42,.04) 1px,transparent 1px);background-size:80px 80px;}
+.hero::after{content:'';position:absolute;top:-20%;right:-10%;width:600px;height:600px;background:radial-gradient(ellipse,rgba(232,80,10,.07) 0%,transparent 70%);}
+.hero-in{position:relative;z-index:2;display:grid;grid-template-columns:1fr 380px;gap:64px;align-items:center;padding:72px 40px;}
+.hero-dot{display:inline-flex;align-items:center;gap:10px;margin-bottom:28px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--fire);animation:blink 2s infinite;}
+.dot-txt{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-t1{font-size:clamp(52px,7vw,86px);font-weight:700;line-height:.95;color:var(--white);}
+.hero-t2{font-size:clamp(52px,7vw,86px);font-weight:300;font-style:italic;line-height:.95;color:var(--goldlt);margin-bottom:20px;}
+.hero-ar{font-family:'Noto Naskh Arabic',serif;font-size:26px;color:var(--gold);margin-bottom:28px;}
+.hero-desc{font-size:19px;font-weight:300;color:var(--silver);line-height:1.75;max-width:500px;margin-bottom:40px;}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;}
+.hero-stats{display:flex;flex-direction:column;gap:1px;}
+.hs{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:24px 28px;transition:background .2s;}
+.hs:hover{background:rgba(255,255,255,.06);}
+.hs-val{font-size:40px;font-weight:700;color:var(--fire);line-height:1;margin-bottom:5px;}
+.hs-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.hs-note{font-size:12px;color:var(--silver);font-style:italic;}
+.hero-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--fire),var(--gold),var(--fire));background-size:200%;animation:sh 4s linear infinite;}
+@keyframes sh{0%{background-position:-200% center}100%{background-position:200% center}}
+@media(max-width:900px){.hero-in{grid-template-columns:1fr;}.hero-stats{display:grid;grid-template-columns:1fr 1fr;}}
+@media(max-width:500px){.hero-in{padding:40px 20px;}.hero-stats{grid-template-columns:1fr;}}
+
+/* WHY */
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
+.why-pts{display:flex;flex-direction:column;gap:14px;margin-top:28px;}
+.why-pt{display:flex;gap:14px;align-items:flex-start;}
+.why-ico{width:34px;height:34px;background:rgba(232,80,10,.1);border:1px solid rgba(232,80,10,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
+.why-txt{font-size:15px;color:var(--silver);line-height:1.65;font-weight:300;}
+.why-txt strong{color:var(--white);font-weight:600;}
+.why-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.04);}
+.wst{background:var(--ink2);padding:32px 24px;position:relative;overflow:hidden;}
+.wst::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:var(--fire);transform:scaleX(0);transform-origin:left;transition:transform .4s;}
+.wst:hover::before{transform:scaleX(1);}
+.wst-n{font-size:44px;font-weight:700;color:var(--goldlt);line-height:1;margin-bottom:7px;}
+.wst-l{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.wst-note{font-size:12px;color:var(--silver);font-style:italic;line-height:1.5;}
+@media(max-width:900px){.why-grid{grid-template-columns:1fr;gap:48px;}}
+
+/* TIERS */
+.tiers{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.tier{padding:52px 44px;position:relative;overflow:hidden;}
+.tier.t1{background:var(--ink2);border-top:3px solid var(--fire);}
+.tier.t2{background:var(--ink3);border-top:3px solid var(--gold);}
+.tier-n{font-family:'Space Mono',monospace;font-size:80px;font-weight:700;color:rgba(255,255,255,.04);position:absolute;top:16px;right:28px;line-height:1;}
+.tier-title{font-size:34px;font-weight:700;color:var(--white);margin:10px 0 6px;line-height:1.1;}
+.tier-sub{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;}
+.tier-desc{font-size:16px;font-weight:300;color:var(--silver);line-height:1.75;margin-bottom:28px;}
+.tier-list{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:36px;}
+.tier-list li{display:flex;gap:11px;font-size:14px;color:var(--silver);line-height:1.5;}
+.tier-list li::before{content:'→';font-family:'Space Mono',monospace;font-size:11px;flex-shrink:0;margin-top:1px;}
+.t1 .tier-list li::before{color:var(--fire);}
+.t2 .tier-list li::before{color:var(--gold);}
+.tier-price-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.tier-price{font-size:26px;font-weight:700;color:var(--fire);margin-bottom:24px;}
+.t2 .tier-price{color:var(--goldlt);}
+@media(max-width:768px){.tiers{grid-template-columns:1fr;}}
+
+/* INDUSTRIES */
+.ind-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;}
+.ind{background:var(--ink2);padding:36px 28px;border-bottom:3px solid transparent;transition:all .3s;cursor:pointer;}
+.ind:hover{background:var(--ink3);border-bottom-color:var(--fire);}
+.ind-ico{font-size:30px;margin-bottom:18px;}
+.ind-name{font-size:20px;font-weight:700;color:var(--white);margin-bottom:10px;}
+.ind-desc{font-size:13px;font-weight:300;color:var(--muted);line-height:1.65;margin-bottom:16px;}
+.ind-tags{display:flex;flex-wrap:wrap;gap:5px;}
+.itag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--fire);border:1px solid rgba(232,80,10,.25);padding:3px 7px;}
+@media(max-width:900px){.ind-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:500px){.ind-grid{grid-template-columns:1fr;}}
+
+/* HOW */
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.how-step{background:var(--cream);padding:44px 36px;position:relative;overflow:hidden;}
+.how-step::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--fire);}
+.how-n{font-family:'Space Mono',monospace;font-size:68px;font-weight:700;color:rgba(10,22,40,.07);position:absolute;top:20px;right:24px;line-height:1;}
+.how-ico{font-size:26px;margin-bottom:18px;}
+.how-title{font-size:26px;font-weight:700;color:var(--ink);margin-bottom:12px;}
+.how-desc{font-size:14px;font-weight:300;color:var(--muted);line-height:1.7;}
+.how-desc strong{color:var(--ink);font-weight:600;}
+@media(max-width:768px){.how-grid{grid-template-columns:1fr;}}
+
+/* SHOWCASE */
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.sc{background:var(--ink2);overflow:hidden;}
+.sc-img-wrap{overflow:hidden;position:relative;}
+.sc-img{width:100%;height:240px;object-fit:cover;filter:brightness(.6) saturate(.8);transition:filter .4s,transform .5s;}
+.sc:hover .sc-img{filter:brightness(.75) saturate(1);transform:scale(1.04);}
+.sc-img-wrap::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(to top,var(--ink2),transparent);}
+.sc-body{padding:24px 28px 32px;}
+.sc-title{font-size:24px;font-weight:700;color:var(--white);margin:8px 0 10px;line-height:1.2;}
+.sc-desc{font-size:13px;font-weight:300;color:var(--muted);line-height:1.65;margin-bottom:18px;}
+.sc-specs{display:flex;flex-direction:column;gap:0;margin-bottom:18px;}
+.sc-spec{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.sc-sl{color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+.sc-sv{color:var(--goldlt);}
+.sc-roi{background:rgba(232,80,10,.08);border:1px solid rgba(232,80,10,.2);padding:10px 14px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--fire);}
+.img-cred{margin-top:14px;font-family:'Space Mono',monospace;font-size:8px;color:var(--muted);line-height:1.8;}
+.img-cred a{color:var(--muted);}
+@media(max-width:900px){.sc-grid{grid-template-columns:1fr;}}
+
+/* PILOT */
+.pilot{background:linear-gradient(135deg,#0D1E35 0%,#1a0d05 100%);border-top:3px solid var(--fire);border-bottom:3px solid var(--fire);position:relative;overflow:hidden;}
+.pilot::before{content:'LIVE';position:absolute;top:50%;right:4%;transform:translateY(-50%);font-family:'Space Mono',monospace;font-size:160px;font-weight:700;color:rgba(232,80,10,.04);line-height:1;pointer-events:none;}
+.pilot-grid{display:grid;grid-template-columns:1fr 280px;gap:56px;align-items:center;}
+.pilot-badge{display:inline-flex;align-items:center;gap:10px;background:rgba(232,80,10,.12);border:1px solid rgba(232,80,10,.3);padding:7px 14px;margin-bottom:22px;}
+.pb-dot{width:8px;height:8px;border-radius:50%;background:var(--fire);animation:blink 2s infinite;}
+.pb-txt{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--fire);}
+.pilot-title{font-size:clamp(26px,3.5vw,40px);font-weight:700;color:var(--white);line-height:1.15;margin-bottom:18px;}
+.pilot-title em{font-style:italic;color:var(--goldlt);}
+.pilot-body{font-size:15px;font-weight:300;color:var(--silver);line-height:1.75;margin-bottom:24px;max-width:520px;}
+.ptags{display:flex;flex-wrap:wrap;gap:7px;}
+.ptag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,149,42,.3);padding:5px 10px;}
+.pilot-stats{display:flex;flex-direction:column;gap:1px;}
+.pst{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:18px 22px;}
+.pst-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.pst-val{font-size:20px;font-weight:700;color:var(--goldlt);line-height:1;margin-bottom:3px;}
+.pst-note{font-size:11px;color:var(--muted);font-style:italic;}
+.pilot-cta{display:block;background:var(--fire);color:var(--white);text-align:center;padding:15px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.25em;text-transform:uppercase;margin-top:1px;transition:background .2s;}
+.pilot-cta:hover{background:var(--fire2);}
+@media(max-width:768px){.pilot-grid{grid-template-columns:1fr;}}
+
+/* PARTNER */
+.partner-hd{margin-bottom:48px;}
+.partner-grid{display:grid;grid-template-columns:200px 1fr 1fr;gap:28px;align-items:start;}
+.plbox{background:var(--ink);padding:32px 20px;text-align:center;position:sticky;top:80px;}
+.pl-mark{width:56px;height:56px;background:var(--fire);border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--white);margin:0 auto 14px;}
+.pl-name{font-size:16px;font-weight:700;color:var(--white);margin-bottom:5px;}
+.pl-sub{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);line-height:1.5;margin-bottom:12px;}
+.pl-loc{font-size:11px;color:var(--muted);font-style:italic;}
+.pb-title{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--fire);margin-bottom:18px;}
+.cap-list{display:flex;flex-direction:column;gap:16px;}
+.cap{display:flex;gap:14px;align-items:flex-start;padding-bottom:16px;border-bottom:1px solid rgba(10,22,40,.06);}
+.cap:last-child{border-bottom:none;padding-bottom:0;}
+.cap-ico{font-size:18px;flex-shrink:0;width:26px;text-align:center;margin-top:2px;}
+.cap-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px;}
+.cap-desc{font-size:12px;font-weight:300;color:var(--muted);line-height:1.65;}
+.flow-list{display:flex;flex-direction:column;}
+.fl{display:flex;gap:14px;background:var(--white);padding:16px 18px;border:1px solid rgba(10,22,40,.07);border-bottom:none;}
+.fl:last-child{border-bottom:1px solid rgba(10,22,40,.07);}
+.fl-n{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:var(--fire);flex-shrink:0;width:22px;padding-top:2px;}
+.fl-t{font-size:13px;font-weight:300;color:var(--muted);line-height:1.65;}
+.fl-t strong{color:var(--ink);font-weight:600;}
+.fl-arr{text-align:center;padding:3px;font-family:'Space Mono',monospace;font-size:13px;color:var(--fire);opacity:.4;}
+.p-result{background:var(--ink);padding:18px 20px;margin-top:10px;}
+.p-result-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.p-result-txt{font-size:14px;font-weight:600;font-style:italic;color:var(--white);line-height:1.4;}
+.p-disc{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);line-height:1.8;border-top:1px solid rgba(10,22,40,.08);padding-top:18px;margin-top:36px;}
+.p-disc a{color:var(--fire);}
+@media(max-width:900px){.partner-grid{grid-template-columns:1fr 1fr;}.plbox{position:static;}}
+@media(max-width:600px){.partner-grid{grid-template-columns:1fr;}}
+
+/* ROI STRIP */
+.roi-strip{background:var(--fire);padding:52px 0;}
+.roi-in{display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;}
+.roi-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:8px;}
+.roi-title{font-size:clamp(26px,3.5vw,36px);font-weight:700;color:var(--white);line-height:1.1;}
+.roi-sub{font-size:15px;font-weight:300;color:rgba(255,255,255,.75);margin-top:8px;}
+.roi-btn{display:inline-block;background:var(--white);color:var(--fire);padding:16px 36px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;flex-shrink:0;transition:all .2s;}
+.roi-btn:hover{background:var(--ink);color:var(--white);}
+
+/* DISCLAIMER */
+.disc{background:#FFF8EC;border-top:1px solid rgba(201,149,42,.25);border-bottom:1px solid rgba(201,149,42,.25);padding:14px 0;}
+.disc-in{display:flex;align-items:flex-start;gap:12px;}
+.disc-badge{font-family:'Space Mono',monospace;font-size:8px;font-weight:700;color:var(--gold);background:rgba(201,149,42,.12);padding:3px 9px;white-space:nowrap;flex-shrink:0;margin-top:1px;}
+.disc-txt{font-family:'Space Mono',monospace;font-size:9px;color:#7A6A4A;line-height:1.7;}
+.disc-txt strong{color:#3A2A0A;}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;}
+.av-list{display:flex;flex-direction:column;}
+.av{padding:18px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:18px;align-items:flex-start;}
+.av:first-child{padding-top:0;}
+.av-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);min-width:80px;flex-shrink:0;padding-top:2px;}
+.av-txt{font-size:15px;font-weight:300;color:var(--silver);line-height:1.65;}
+@media(max-width:768px){.about-grid{grid-template-columns:1fr;gap:40px;}}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;}
+.c-methods{display:flex;flex-direction:column;gap:2px;margin-bottom:32px;}
+.cm{display:flex;gap:18px;align-items:center;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);padding:16px 22px;transition:background .2s;}
+.cm:hover{background:rgba(255,255,255,.06);}
+.cm-ico{font-size:17px;flex-shrink:0;}
+.cm-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+.cm-val{font-size:14px;color:var(--silver);}
+.cm-val a{color:var(--goldlt);}
+.c-form{display:flex;flex-direction:column;gap:14px;}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.f-field{display:flex;flex-direction:column;gap:5px;}
+.f-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
+.f-in,.f-sel,.f-ta{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--white);padding:11px 13px;font-family:'Cormorant Garamond',serif;font-size:15px;outline:none;width:100%;transition:border-color .2s;}
+.f-in:focus,.f-sel:focus,.f-ta:focus{border-color:var(--fire);}
+.f-sel option{background:var(--ink2);}
+.f-ta{resize:vertical;min-height:90px;}
+.f-submit{background:var(--fire);color:var(--white);padding:15px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s;}
+.f-submit:hover{background:var(--fire2);}
+@media(max-width:768px){.contact-grid{grid-template-columns:1fr;gap:40px;}.f-row{grid-template-columns:1fr;}}
+
+/* FOOTER */
+.footer{background:var(--ink);border-top:1px solid rgba(201,149,42,.15);}
+.footer-main{padding:56px 0 40px;}
+.fg{display:grid;grid-template-columns:260px 1fr 1fr 1fr;gap:40px;}
+.fb-name{font-size:20px;font-weight:700;color:var(--white);margin-bottom:5px;}
+.fb-name em{font-style:normal;color:var(--goldlt);}
+.fb-ar{font-family:'Noto Naskh Arabic',serif;font-size:20px;color:var(--gold);margin-bottom:10px;}
+.fb-tag{font-size:13px;font-style:italic;font-weight:300;color:var(--muted);margin-bottom:16px;}
+.fb-info{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);line-height:1.8;}
+.fb-info a{color:var(--muted);}
+.fc-title{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--fire);margin-bottom:14px;}
+.fc-links{list-style:none;display:flex;flex-direction:column;gap:9px;}
+.fc-links a{font-size:13px;color:var(--muted);transition:color .2s;font-weight:300;}
+.fc-links a:hover{color:var(--silver);}
+.footer-bot{border-top:1px solid rgba(255,255,255,.05);padding:18px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.f-copy,.f-legal{font-family:'Space Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.05em;}
+@media(max-width:900px){.fg{grid-template-columns:1fr 1fr;gap:28px;}}
+@media(max-width:500px){.fg{grid-template-columns:1fr;}.wrap{padding:0 20px;}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-in">
+    <div class="nav-brand">
+      <div class="nb-en">MAKEEN <span>ROBOTICS</span></div>
+      <div class="nb-ar">مَكِين</div>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#solutions">Solutions</a></li>
+      <li><a href="#industries">Industries</a></li>
+      <li><a href="#showcase">Robots</a></li>
+      <li><a href="#partner">Platform</a></li>
+      <li><a href="#about">Company</a></li>
+      <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-in wrap">
+    <div>
+      <div class="hero-dot"><div class="dot"></div><div class="dot-txt">Dubai, UAE &nbsp;·&nbsp; UAE Robotics Leader</div></div>
+      <div class="hero-t1">MAKEEN</div>
+      <div class="hero-t2">Robotics.</div>
+      <div class="hero-ar">القوة في كل حركة</div>
+      <p class="hero-desc">We trade, implement, and service autonomous robots for hospitality, F&amp;B, healthcare, and retail across the Gulf. From standalone serving bots to enterprise humanoid integration — <em style="color:var(--goldlt)">power in every motion.</em></p>
+      <div class="hero-btns">
+        <a href="#solutions" class="btn btn-fire">Explore Solutions</a>
+        <a href="#contact" class="btn btn-ghost">Request a Briefing</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-lbl">Labor cost reduction</div><div class="hs-val">30%</div><div class="hs-note">UAE hospitality deployments</div></div>
+      <div class="hs"><div class="hs-lbl">Avg. payback period</div><div class="hs-val">18mo</div><div class="hs-note">High-volume F&amp;B operations</div></div>
+      <div class="hs"><div class="hs-lbl">Security coverage</div><div class="hs-val">24/7</div><div class="hs-note">Robo-dog patrol, no fatigue</div></div>
+      <div class="hs"><div class="hs-lbl">Hospitality robot market</div><div class="hs-val">$2.3B</div><div class="hs-note">Projected by 2031 · 25% CAGR</div></div>
+    </div>
+  </div>
+  <div class="hero-bar"></div>
+</section>
+
+<!-- WHY NOW -->
+<section class="sec sec-dk2" id="why">
+  <div class="wrap">
+    <div class="why-grid">
+      <div>
+        <div class="ey">The Moment</div>
+        <h2 class="sh" style="margin-bottom:18px;">The UAE is <em>ready</em><br>for robotics now.</h2>
+        <p class="prose">UAE Vision 2031, chronic hospitality labour shortages, and rising guest expectations have converged. The economics now favour automation in ways they didn't three years ago.</p>
+        <div class="why-pts">
+          <div class="why-pt"><div class="why-ico">🏨</div><div class="why-txt"><strong>Labour scarcity</strong> — UAE hospitality turnover above 70%. Robots provide consistency where human staffing cannot.</div></div>
+          <div class="why-pt"><div class="why-ico">📈</div><div class="why-txt"><strong>Vision 2031</strong> — Smart city mandates create regulatory and reputational pressure to automate.</div></div>
+          <div class="why-pt"><div class="why-ico">💰</div><div class="why-txt"><strong>ROI is proven</strong> — Serving robots achieve positive ROI within 12–18 months at UAE labour costs.</div></div>
+          <div class="why-pt"><div class="why-ico">🤝</div><div class="why-txt"><strong>Guests expect it</strong> — Premium travellers view robotic service as a differentiator, not a novelty.</div></div>
+        </div>
+      </div>
+      <div class="why-stats">
+        <div class="wst"><div class="wst-l">Hospitality robot market 2024</div><div class="wst-n">$472M</div><div class="wst-note">Growing to $2.3B by 2031</div></div>
+        <div class="wst"><div class="wst-l">Market CAGR 2024–2031</div><div class="wst-n">25.5%</div><div class="wst-note">Fastest-growing: back-of-house</div></div>
+        <div class="wst"><div class="wst-l">Restaurants understaffed globally</div><div class="wst-n">60%+</div><div class="wst-note">National Restaurant Association 2024</div></div>
+        <div class="wst"><div class="wst-l">Efficiency gain (Co-Pilot model)</div><div class="wst-n">38%+</div><div class="wst-note">Operational efficiency · UAE study 2025</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTIONS -->
+<section class="sec sec-dark" id="solutions">
+  <div class="wrap">
+    <div class="sec-hd"><div class="ey">Solutions</div><h2 class="sh">Two tiers. <em>One partner.</em></h2></div>
+    <div class="tiers">
+      <div class="tier t1">
+        <div class="tier-n">01</div>
+        <div class="ey">Standalone · RaaS</div>
+        <h3 class="tier-title">Robotics as<br>a Service</h3>
+        <div class="tier-sub">Quick-deploy · Single site · Per robot</div>
+        <p class="tier-desc">Plug-and-play robot deployment for F&amp;B venues, hotel restaurants, and retail floors. No complex integration required. One robot, one site, immediate impact.</p>
+        <ul class="tier-list">
+          <li>Serving robots for restaurants &amp; cafes</li>
+          <li>Delivery bots for hotel room service</li>
+          <li>Robo-dog security patrol (standalone)</li>
+          <li>Monthly lease model — no capex required</li>
+          <li>Makeen installs, trains staff, and services</li>
+          <li>UAE regulatory compliance handled</li>
+        </ul>
+        <div class="tier-price-lbl">Starting from</div>
+        <div class="tier-price">AED 3,500 / month</div>
+        <a href="#contact" class="btn btn-fire">Request a Quote</a>
+      </div>
+      <div class="tier t2">
+        <div class="tier-n">02</div>
+        <div class="ey gold">Enterprise · Integration</div>
+        <h3 class="tier-title">Full Workflow<br>Automation</h3>
+        <div class="tier-sub">Humanoids · PMS Integration · Multi-site</div>
+        <p class="tier-desc">End-to-end robotic workflow automation for hotel groups and large operators. Humanoids and advanced robots integrated with your PMS, ERP, and operations — powered by Sirona's enterprise platform.</p>
+        <ul class="tier-list">
+          <li>Humanoid robots for laundry &amp; housekeeping</li>
+          <li>Multi-robot fleet orchestration</li>
+          <li>PMS / Opera / SAP integration</li>
+          <li>100% task tracking &amp; audit trails</li>
+          <li>Agriculture &amp; hospital automation</li>
+          <li>Dedicated account management + SLA</li>
+        </ul>
+        <div class="tier-price-lbl">Bespoke pricing</div>
+        <div class="tier-price">Discovery → Pilot → Scale</div>
+        <a href="#contact" class="btn btn-gold">Request a Briefing</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INDUSTRIES -->
+<section class="sec sec-mid" id="industries">
+  <div class="wrap">
+    <div class="sec-hd"><div class="ey">Industries</div><h2 class="sh">Built for the <em>sectors</em><br>that never stop.</h2></div>
+    <div class="ind-grid">
+      <div class="ind"><div class="ind-ico">🏨</div><div class="ind-name">Hospitality</div><p class="ind-desc">Hotels, resorts, and serviced apartments. Robots handle housekeeping logistics, room service, laundry, and lobby concierge — freeing staff for genuine guest care.</p><div class="ind-tags"><span class="itag">Room Service</span><span class="itag">Laundry</span><span class="itag">Concierge</span><span class="itag">Security</span></div></div>
+      <div class="ind"><div class="ind-ico">🍽</div><div class="ind-name">Food &amp; Beverage</div><p class="ind-desc">Restaurants, cafes, hotel dining. Serving robots carry multiple trays autonomously, reduce errors, and allow staff to focus on upselling and guest experience.</p><div class="ind-tags"><span class="itag">Table Service</span><span class="itag">Kitchen Assist</span><span class="itag">Bartending</span></div></div>
+      <div class="ind"><div class="ind-ico">🏥</div><div class="ind-name">Healthcare</div><p class="ind-desc">Hospitals and clinics deploying robots for logistics, specimen transport, supply replenishment, and disinfection — reducing staff exposure and improving compliance.</p><div class="ind-tags"><span class="itag">Logistics</span><span class="itag">Disinfection</span><span class="itag">Supply Chain</span></div></div>
+      <div class="ind"><div class="ind-ico">🛍</div><div class="ind-name">Retail &amp; Logistics</div><p class="ind-desc">Malls, supermarkets, and distribution centres. Security patrols, inventory management, and customer-facing robots that operate around the clock without overtime.</p><div class="ind-tags"><span class="itag">Security</span><span class="itag">Inventory</span><span class="itag">Customer Assist</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW WE WORK -->
+<section class="sec sec-light" id="how">
+  <div class="wrap">
+    <div class="sec-hd"><div class="ey" style="color:var(--fire)">How We Work</div><h2 class="sh dk">Trade. Implement. <em>Service.</em></h2></div>
+    <div class="how-grid">
+      <div class="how-step"><div class="how-n">01</div><div class="how-ico">🤝</div><h3 class="how-title">Trade &amp; Source</h3><p class="how-desc">We represent leading global robot manufacturers and bring their products to the UAE. <strong>Hardware-agnostic</strong> — we match the right robot to your use case, not the other way around.</p></div>
+      <div class="how-step"><div class="how-n">02</div><div class="how-ico">⚙️</div><h3 class="how-title">Implement</h3><p class="how-desc">Full on-site deployment by our UAE-based team. <strong>Physical installation, network integration, and staff training.</strong> For enterprise clients, we integrate with your PMS or ERP via Sirona's Co-Pilot platform.</p></div>
+      <div class="how-step"><div class="how-n">03</div><div class="how-ico">🔧</div><h3 class="how-title">Service &amp; Scale</h3><p class="how-desc">Ongoing maintenance, SLA-backed support, and performance monitoring. <strong>Consulting, leasing, and financing options.</strong> As your operation grows, we scale the fleet across your portfolio.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ROBOT SHOWCASE -->
+<section class="sec sec-dark" id="showcase">
+  <div class="wrap">
+    <div class="sec-hd">
+      <div class="ey">Robot Showcase</div>
+      <h2 class="sh">Three use cases. <em>Proven ROI.</em></h2>
+      <p style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:10px;">Representative case studies based on published UAE market data. Not guaranteed outcomes.</p>
+    </div>
+    <div class="sc-grid">
+      <div class="sc">
+        <div class="sc-img-wrap"><img class="sc-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Relay_delivery_robot_in_a_hotel_corridor.jpg/800px-Relay_delivery_robot_in_a_hotel_corridor.jpg" alt="Relay delivery robot in hotel corridor" onerror="this.parentNode.style.background='#112240';this.style.display='none'"></div>
+        <div class="sc-body">
+          <div class="ey">Use Case 01 · Standalone</div>
+          <h3 class="sc-title">Serving Robots</h3>
+          <p class="sc-desc">Autonomous tray-delivery for restaurants, hotel dining, and room service. LiDAR navigation. 8–12 hrs per charge. 1 robot per 12–15 tables.</p>
+          <div class="sc-specs">
+            <div class="sc-spec"><span class="sc-sl">Labor saving</span><span class="sc-sv">Up to 30%</span></div>
+            <div class="sc-spec"><span class="sc-sl">Payback period</span><span class="sc-sv">12–18 months</span></div>
+            <div class="sc-spec"><span class="sc-sl">3-year ROI</span><span class="sc-sv">80–124%</span></div>
+            <div class="sc-spec"><span class="sc-sl">Models</span><span class="sc-sv">Pudu BellaBot, Bear Servi</span></div>
+          </div>
+          <div class="sc-roi">↗ From AED 3,500 / month lease</div>
+        </div>
+      </div>
+      <div class="sc">
+        <div class="sc-img-wrap"><img class="sc-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Boston_Dynamics_Spot_Robot.jpg/800px-Boston_Dynamics_Spot_Robot.jpg" alt="Boston Dynamics Spot robot" onerror="this.parentNode.style.background='#0d2035';this.style.display='none'"></div>
+        <div class="sc-body">
+          <div class="ey">Use Case 02 · Enterprise</div>
+          <h3 class="sc-title">Security Robo-Dog</h3>
+          <p class="sc-desc">Quadruped patrol robots cover hotel grounds, parking, and perimeters 24/7. Thermal cameras, 360° LiDAR, AI anomaly detection. No fatigue, no no-shows.</p>
+          <div class="sc-specs">
+            <div class="sc-spec"><span class="sc-sl">Labor reduction</span><span class="sc-sv">30–50%</span></div>
+            <div class="sc-spec"><span class="sc-sl">Response time</span><span class="sc-sv">−34% vs CCTV-only</span></div>
+            <div class="sc-spec"><span class="sc-sl">Market CAGR</span><span class="sc-sv">27% (2024–2030)</span></div>
+            <div class="sc-spec"><span class="sc-sl">Models</span><span class="sc-sv">Unitree Go2, BD Spot</span></div>
+          </div>
+          <div class="sc-roi">↗ Insurance premium reductions available</div>
+        </div>
+      </div>
+      <div class="sc">
+        <div class="sc-img-wrap"><img class="sc-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Toyota_HSR_robot.jpg/800px-Toyota_HSR_robot.jpg" alt="Toyota HSR humanoid robot" onerror="this.parentNode.style.background='#0a1a12';this.style.display='none'"></div>
+        <div class="sc-body">
+          <div class="ey">Use Case 03 · Enterprise</div>
+          <h3 class="sc-title">Humanoid Laundry</h3>
+          <p class="sc-desc">Humanoid and dedicated folding robots handle hotel linen sorting, folding, and transport. 300+ kg/day. Integrates with housekeeping schedules and PMS.</p>
+          <div class="sc-specs">
+            <div class="sc-spec"><span class="sc-sl">Linen processed</span><span class="sc-sv">300+ kg / day</span></div>
+            <div class="sc-spec"><span class="sc-sl">Housekeeping time freed</span><span class="sc-sv">~35%</span></div>
+            <div class="sc-spec"><span class="sc-sl">Market CAGR</span><span class="sc-sv">36.5% (2024–2030)</span></div>
+            <div class="sc-spec"><span class="sc-sl">Platform</span><span class="sc-sv">Sirona Co-Pilot + PMS</span></div>
+          </div>
+          <div class="sc-roi">↗ Demonstrated at CES 2026 · LG, DYNA, Figure</div>
+        </div>
+      </div>
+    </div>
+    <div class="img-cred">Image credits: Relay robot — <a href="https://commons.wikimedia.org/wiki/File:Relay_delivery_robot_in_a_hotel_corridor.jpg" target="_blank">Wikimedia Commons</a> CC BY-SA 4.0 · Boston Dynamics Spot — <a href="https://commons.wikimedia.org/wiki/File:Boston_Dynamics_Spot_Robot.jpg" target="_blank">Wikimedia Commons</a> CC BY-SA 4.0 · Toyota HSR — <a href="https://commons.wikimedia.org/wiki/File:Toyota_HSR_robot.jpg" target="_blank">Wikimedia Commons</a> CC BY-SA 4.0. All trademarks property of respective owners.</div>
+  </div>
+</section>
+
+<!-- PILOT -->
+<section class="pilot sec" id="pilot">
+  <div class="wrap">
+    <div class="pilot-grid">
+      <div>
+        <div class="pilot-badge"><div class="pb-dot"></div><div class="pb-txt">Live Engagement · UAE · 2026</div></div>
+        <h2 class="pilot-title">Makeen is working with a<br><em>UAE hotel operator</em><br>to automate their workflows.</h2>
+        <p class="pilot-body">We are in active discussions with a UAE hospitality group to deploy robotic automation across housekeeping, laundry, and in-room service. This engagement is shaping our UAE deployment playbook. If you operate hotels or resorts in the region — we want to hear from you.</p>
+        <div class="ptags"><span class="ptag">Housekeeping Automation</span><span class="ptag">Laundry Robotics</span><span class="ptag">In-Room Service</span><span class="ptag">UAE · Dubai</span></div>
+      </div>
+      <div class="pilot-stats">
+        <div class="pst"><div class="pst-lbl">Status</div><div class="pst-val">Active</div><div class="pst-note">Workflow mapping underway</div></div>
+        <div class="pst"><div class="pst-lbl">Region</div><div class="pst-val">UAE</div><div class="pst-note">Regional expansion planned</div></div>
+        <div class="pst"><div class="pst-lbl">Sector</div><div class="pst-val">Hospitality</div><div class="pst-note">Hotels &amp; resorts</div></div>
+        <a href="#contact" class="pilot-cta">Discuss Your Property →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNER -->
+<section class="sec sec-light" id="partner">
+  <div class="wrap">
+    <div class="partner-hd">
+      <div class="ey" style="color:var(--fire)">Technology Partner</div>
+      <h2 class="sh dk" style="margin-bottom:14px;">Powered by <em>enterprise-grade</em><br>robotics infrastructure.</h2>
+      <p style="font-size:16px;font-weight:300;color:var(--muted);max-width:620px;line-height:1.75;">For enterprise deployments, Makeen partners with Sirona Robotics — the platform layer that orchestrates, trains, and integrates robot workers into large-scale hospitality and industrial operations.</p>
+    </div>
+    <div class="partner-grid">
+      <div class="plbox">
+        <div class="pl-mark">SR</div>
+        <div class="pl-name">Sirona Robotics</div>
+        <div class="pl-sub">Enterprise Platform Layer</div>
+        <div class="pl-loc">📍 Singapore<br><a href="https://www.sironarobotics.com" target="_blank" style="color:var(--fire);font-size:10px;font-family:'Space Mono',monospace;">sironarobotics.com</a></div>
+      </div>
+      <div>
+        <div class="pb-title">What Sirona brings</div>
+        <div class="cap-list">
+          <div class="cap"><div class="cap-ico">⚙</div><div><div class="cap-name">Co-Pilot Orchestration</div><div class="cap-desc">Fleet-level task assignment and coordination across multiple robots — managing concurrent deployments and exceptions without human intervention.</div></div></div>
+          <div class="cap"><div class="cap-ico">🔗</div><div><div class="cap-name">PMS &amp; ERP Integration</div><div class="cap-desc">Native connectors to Opera, Amadeus, and SAP — bi-directional data flow, compliance audit trails, and housekeeping schedule sync.</div></div></div>
+          <div class="cap"><div class="cap-ico">🧠</div><div><div class="cap-name">Adaptive Training</div><div class="cap-desc">On-device and cloud pipelines that teach robots facility-specific layouts and SOPs — continuously improving with each deployment.</div></div></div>
+          <div class="cap"><div class="cap-ico">🔒</div><div><div class="cap-name">Data Sovereignty</div><div class="cap-desc">On-premises and air-gapped deployment available. Operational data never shared with hardware vendors. Singapore PDPA compliant.</div></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="pb-title">Makeen + Sirona together</div>
+        <div class="flow-list">
+          <div class="fl"><div class="fl-n">01</div><div class="fl-t"><strong>Makeen</strong> sources and procures hardware — serving robots, robo-dogs, humanoids — from global manufacturers.</div></div>
+          <div class="fl-arr">↓</div>
+          <div class="fl"><div class="fl-n">02</div><div class="fl-t"><strong>Makeen</strong> implements on-site: physical install, UAE regulatory compliance, and staff orientation.</div></div>
+          <div class="fl-arr">↓</div>
+          <div class="fl"><div class="fl-n">03</div><div class="fl-t"><strong>Sirona's Co-Pilot</strong> integrates robots with PMS and workflows — orchestrating tasks, logging every action, retraining the fleet.</div></div>
+          <div class="fl-arr">↓</div>
+          <div class="fl"><div class="fl-n">04</div><div class="fl-t"><strong>Makeen</strong> provides UAE-based maintenance and SLA management on an ongoing basis.</div></div>
+        </div>
+        <div class="p-result"><div class="p-result-lbl">The result for your property</div><div class="p-result-txt">Hardware + Platform + Local Support — as one managed service.</div></div>
+      </div>
+    </div>
+    <div class="p-disc">Sirona Robotics is an independent company incorporated in Singapore (Sirona Robotics Pte Ltd). The Makeen–Sirona partnership covers UAE enterprise deployments. All Sirona platform capabilities, trademarks, and IP remain the property of Sirona Robotics Pte Ltd. &nbsp;<a href="https://www.sironarobotics.com" target="_blank">www.sironarobotics.com</a></div>
+  </div>
+</section>
+
+<!-- ROI STRIP -->
+<section class="roi-strip">
+  <div class="wrap">
+    <div class="roi-in">
+      <div><div class="roi-lbl">Interactive Tool</div><div class="roi-title">Calculate your<br>robotics ROI.</div><div class="roi-sub">Serving robots · Security robo-dogs · Humanoid laundry.<br>Adjust your own numbers, see the business case instantly.</div></div>
+      <a href="makeen_roi_calculator.html" target="_blank" class="roi-btn">Open ROI Calculator →</a>
+    </div>
+  </div>
+</section>
+
+<!-- DISCLAIMER -->
+<div class="disc">
+  <div class="wrap"><div class="disc-in"><div class="disc-badge">⚠ NOTE</div><div class="disc-txt"><strong>All figures, case studies, and ROI projections on this site are representative estimates based on published UAE and global market research.</strong> They are not guarantees of performance. Actual results depend on your specific operation, deployment scale, and market conditions. Case studies are sample scenarios from aggregated industry data and do not represent specific Makeen Robotics client deployments. Contact us for a site-specific business case.</div></div></div>
+</div>
+
+<!-- ABOUT -->
+<section class="sec sec-dark" id="about">
+  <div class="wrap">
+    <div class="sec-hd"><div class="ey">Company</div><h2 class="sh">Built in the <em>UAE.</em><br>Built for the UAE.</h2></div>
+    <div class="about-grid">
+      <div>
+        <p class="prose" style="margin-bottom:24px;">Makeen Robotics LLC is a UAE-based company trading, implementing, and servicing robots and humanoids across the hospitality, F&amp;B, healthcare, and retail sectors of the Gulf.</p>
+        <p class="prose">The name <em style="color:var(--goldlt)">مَكِين</em> — a Quranic Arabic word meaning "powerful and firmly established" — reflects our founding conviction: that robotics in the UAE is not a future trend but a present necessity, and that the companies who deploy it now will be firmly established when the market matures.</p>
+      </div>
+      <div class="av-list">
+        <div class="av"><div class="av-lbl">Mission</div><div class="av-txt">Make autonomous robotics accessible, implementable, and serviceable for every hospitality and service business in the UAE.</div></div>
+        <div class="av"><div class="av-lbl">Vision</div><div class="av-txt">A UAE where robots handle the repetitive — so people can focus on the irreplaceable.</div></div>
+        <div class="av"><div class="av-lbl">Backed by</div><div class="av-txt">UAE-based founders, seed investors, and strategic partners with deep roots in the Gulf's hospitality and investment landscape.</div></div>
+        <div class="av"><div class="av-lbl">Partners</div><div class="av-txt">Technology platform partnership with Sirona Robotics (Singapore) for enterprise deployments.</div></div>
+        <div class="av"><div class="av-lbl">HQ</div><div class="av-txt">Dubai, UAE · Serving UAE, Saudi Arabia, Qatar, and the wider Gulf.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sec sec-dk2" id="contact">
+  <div class="wrap">
+    <div class="sec-hd"><div class="ey">Contact</div><h2 class="sh">Let's talk <em>automation.</em></h2></div>
+    <div class="contact-grid">
+      <div>
+        <p class="prose" style="margin-bottom:32px;">Whether you're a hotel operator curious about serving robots, an enterprise group ready to automate your linen operations, or a manufacturer looking for a UAE distribution partner — we want to hear from you.</p>
+        <div class="c-methods">
+          <div class="cm"><div class="cm-ico">📧</div><div><div class="cm-lbl">Email</div><div class="cm-val"><a href="/cdn-cgi/l/email-protection#a4ccc1c8c8cbe4c9c5cfc1c1cad6cbc6cbd0cdc7d78ac7cbc9"><span class="__cf_email__" data-cfemail="0169646d6d6e416c606a64646f736e636e756862722f626e6c">[email&#160;protected]</span></a></div></div></div>
+          <div class="cm"><div class="cm-ico">📱</div><div><div class="cm-lbl">WhatsApp</div><div class="cm-val"><a href="https://wa.me/971506781841">+971 50 678 1841</a></div></div></div>
+          <div class="cm"><div class="cm-ico">📍</div><div><div class="cm-lbl">Location</div><div class="cm-val">Dubai, United Arab Emirates</div></div></div>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Quick select</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;">
+          <span class="ptag" style="cursor:pointer" onclick="document.getElementById('ftype').value='Hotel / Resort Operator'">🏨 Hotel Operator</span>
+          <span class="ptag" style="cursor:pointer" onclick="document.getElementById('ftype').value='F&B / Restaurant'">🍽 F&amp;B Operator</span>
+          <span class="ptag" style="cursor:pointer" onclick="document.getElementById('ftype').value='Robot Manufacturer'">🤖 Manufacturer</span>
+          <span class="ptag" style="cursor:pointer" onclick="document.getElementById('ftype').value='Investor / Partner'">💼 Investor</span>
+        </div>
+      </div>
+      <div class="c-form">
+        <div class="f-row">
+          <div class="f-field"><label class="f-lbl">Name</label><input class="f-in" type="text" placeholder="Your name"></div>
+          <div class="f-field"><label class="f-lbl">Company</label><input class="f-in" type="text" placeholder="Your company"></div>
+        </div>
+        <div class="f-field"><label class="f-lbl">Email</label><input class="f-in" type="email" placeholder="your@email.com"></div>
+        <div class="f-field">
+          <label class="f-lbl">I am a ...</label>
+          <select class="f-sel" id="ftype">
+            <option value="">Select your role</option>
+            <option>Hotel / Resort Operator</option>
+            <option>F&amp;B / Restaurant</option>
+            <option>Healthcare / Hospital</option>
+            <option>Retail / Logistics</option>
+            <option>Robot Manufacturer</option>
+            <option>Investor / Partner</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="f-field"><label class="f-lbl">Message</label><textarea class="f-ta" placeholder="Tell us about your operation and what you're looking to automate..."></textarea></div>
+        <button class="f-submit" onclick="alert('Thank you — we will be in touch within 24 hours.')">Send Message →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-main">
+    <div class="wrap">
+      <div class="fg">
+        <div>
+          <div class="fb-name">MAKEEN <em>ROBOTICS</em></div>
+          <div class="fb-ar">مَكِين روبوتيكس</div>
+          <div class="fb-tag">"Power in Every Motion."</div>
+          <div class="fb-info">Dubai, UAE<br>Makeen Robotics LLC<br><a href="/cdn-cgi/l/email-protection#adc5c8c1c1c2edc0ccc6c8c8c3dfc2cfc2d9c4cede83cec2c0"><span class="__cf_email__" data-cfemail="9ff7faf3f3f0dff2fef4fafaf1edf0fdf0ebf6fcecb1fcf0f2">[email&#160;protected]</span></a></div>
+        </div>
+        <div>
+          <div class="fc-title">Solutions</div>
+          <ul class="fc-links">
+            <li><a href="#solutions">Robotics as a Service</a></li>
+            <li><a href="#solutions">Enterprise Integration</a></li>
+            <li><a href="#showcase">Serving Robots</a></li>
+            <li><a href="#showcase">Security Robo-Dog</a></li>
+            <li><a href="#showcase">Humanoid Laundry</a></li>
+            <li><a href="makeen_roi_calculator.html" target="_blank">ROI Calculator</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="fc-title">Industries</div>
+          <ul class="fc-links">
+            <li><a href="#industries">Hospitality</a></li>
+            <li><a href="#industries">Food &amp; Beverage</a></li>
+            <li><a href="#industries">Healthcare</a></li>
+            <li><a href="#industries">Retail &amp; Logistics</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="fc-title">Company</div>
+          <ul class="fc-links">
+            <li><a href="#about">About Makeen</a></li>
+            <li><a href="#partner">Technology Partner: Sirona</a></li>
+            <li><a href="#pilot">UAE Pilot Programme</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+            <li><a href="https://www.sironarobotics.com" target="_blank">Sirona Robotics →</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="footer-bot">
+      <div class="f-copy">© 2026 Makeen Robotics LLC · Dubai, UAE · All rights reserved</div>
+      <div class="f-legal">All ROI figures are illustrative estima
